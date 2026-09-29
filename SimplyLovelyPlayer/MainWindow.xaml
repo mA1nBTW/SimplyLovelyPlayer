@@ -1,0 +1,430 @@
+﻿<Window x:Class="SimplyLovelyPlayer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SimplyLovelyPlayer"
+        mc:Ignorable="d"
+        Title="Simply Lovely Player" Height="650" Width="1092">
+
+    <Window.Resources>
+        <Style TargetType="Button" x:Key="CircleButtonStyle">
+            <Setter Property="Width" Value="50"/>
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="Background" Value="DodgerBlue"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <Ellipse Fill="{TemplateBinding Background}" />
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <local:BoolToVisibilityConverter x:Key="boolToVisibilityConverter"/>
+    </Window.Resources>
+    
+    <Grid Background="DarkGray">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="100px"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="6*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Row="0" Grid.Column="0" Margin="8">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="80px"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Background="DarkSlateBlue">
+                <TextBlock Margin="10" Text="Liked" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="36" FontFamily="Franklin Gothic Medium"/>
+            </Grid>
+
+            <ListBox Grid.Row="1" ItemsSource="{Binding LikedSongs}" SelectionChanged="LikedSongsListBox_SelectionChanged">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="32"/>
+                                <ColumnDefinition Width="200"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Column="0" Text="{Binding LikedIndex}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="Black"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding State}" Value="Playing">
+                                                <Setter Property="Foreground" Value="Green"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+
+                            <StackPanel Grid.Column="1" Orientation="Vertical">
+                                <TextBlock Text="{Binding Title}" FontWeight="Bold" FontSize="16">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="Black"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding State}" Value="Playing">
+                                                    <Setter Property="Foreground" Value="Green"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding State}" Value="Stopped">
+                                                    <Setter Property="Foreground" Value="Black"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <TextBlock Text="{Binding Artist}" FontSize="14">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="Gray"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding State}" Value="Playing">
+                                                    <Setter Property="Foreground" Value="DarkGreen"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding State}" Value="Stopped">
+                                                    <Setter Property="Foreground" Value="Gray"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </StackPanel>
+
+                            <Button Grid.Column="2" Margin="30,0,0,0" Content="❤" FontSize="14" Width="30" Height="30" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                Command="{Binding DataContext.LikeCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                CommandParameter="{Binding}">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Foreground" Value="Gray"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding isLiked}" Value="True">
+                                                <Setter Property="Foreground" Value="Green"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+
+        <Grid Grid.Row="0" Grid.Column="1" Margin="0,8,8,8">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="80px"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Orientation="Horizontal" Grid.Row="0" Background="DarkSeaGreen">
+                <TextBlock Margin="10" Text="Songs" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="36" FontFamily="Franklin Gothic Medium"/>
+                <Button Margin="52,0,0,0" Width="50" Height="50" Command="{Binding ReplaceSongsCommand}" Background="Transparent" BorderThickness="0">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Grid>
+                                <Ellipse Fill="DodgerBlue" Width="50" Height="50" />
+
+                                <Canvas Width="20" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <Path Data="M6,6 L14,6 L14,14 M14,6 L6,14" 
+                                        Stroke="White" StrokeThickness="2" />
+                                </Canvas>
+                            </Grid>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                <Button Style="{StaticResource CircleButtonStyle}"
+                    FontFamily="Segoe MDL2 Assets" Content="&#xE710;"
+                    Width="50px" Height="50px" Command="{Binding AddSongsCommand}" Margin="24,0,0,0"/>
+                <Border Height="40" CornerRadius="15" Background="White" BorderBrush="Gray" BorderThickness="1" Margin="100,0,0,0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="30"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" Text="🔍" 
+                            VerticalAlignment="Center" HorizontalAlignment="Center"
+                            FontSize="14" Foreground="Gray"/>
+
+                        <TextBox Grid.Column="1" Width="184" Height="25"
+                            VerticalContentAlignment="Center"
+                            Background="Transparent" BorderThickness="0"
+                            Foreground="Black" FontSize="14"
+                            Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"/>
+                    </Grid>
+                </Border>
+
+            </StackPanel>
+
+            <ListBox Grid.Row="1" ItemsSource="{Binding SongsView}" SelectedItem="{Binding SelectedSong, Mode=TwoWay}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="24px"/>
+                                <ColumnDefinition Width="36px"/>
+                                <ColumnDefinition Width="176"/>
+                                <ColumnDefinition Width="124"/>
+                                <ColumnDefinition Width="124"/>
+                                <ColumnDefinition Width="60"/>
+                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" FontSize="14" Width="20" Height="20" Foreground="Black" Background="Transparent" BorderThickness="0"
+                                    Command="{Binding DataContext.PlayCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    CommandParameter="{Binding}">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Setter Property="Content" Value="▶"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsMouseOver}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding State}" Value="Playing">
+                                                <Setter Property="Content" Value="⏹"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+
+                            <TextBlock Grid.Column="1" Text="{Binding Index}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="Black"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding State}" Value="Playing">
+                                                <Setter Property="Foreground" Value="Green"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding State}" Value="Stopped">
+                                                <Setter Property="Foreground" Value="Black"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            
+                            <StackPanel Grid.Column="2" Orientation="Vertical">
+                                <TextBlock Text="{Binding Title}" FontWeight="Bold" FontSize="16">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="Black"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding State}" Value="Playing">
+                                                    <Setter Property="Foreground" Value="Green"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding State}" Value="Stopped">
+                                                    <Setter Property="Foreground" Value="Black"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <TextBlock Text="{Binding Artist}" FontSize="14">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="Gray"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding State}" Value="Playing">
+                                                    <Setter Property="Foreground" Value="DarkGreen"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding State}" Value="Stopped">
+                                                    <Setter Property="Foreground" Value="Gray"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </StackPanel>
+
+                            <TextBlock Grid.Column="3" Text="{Binding Album}" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="Gray"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding State}" Value="Playing">
+                                                <Setter Property="Foreground" Value="DarkGreen"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding State}" Value="Stopped">
+                                                <Setter Property="Foreground" Value="Gray"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+
+                            <TextBlock Grid.Column="4" Text="{Binding Genre}" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="Gray"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding State}" Value="Playing">
+                                                <Setter Property="Foreground" Value="DarkGreen"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding State}" Value="Stopped">
+                                                <Setter Property="Foreground" Value="Gray"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+
+                            <Button Grid.Column="5" Content="❤" FontSize="14" Width="30" Height="30"
+                                Command="{Binding DataContext.LikeCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                CommandParameter="{Binding}">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Foreground" Value="Gray"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding isLiked}" Value="True">
+                                                <Setter Property="Foreground" Value="Green"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+
+                            <TextBlock Grid.Column="6" Text="{Binding DurationFormatted}" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="Gray"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding State}" Value="Playing">
+                                                <Setter Property="Foreground" Value="DarkGreen"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding State}" Value="Stopped">
+                                                <Setter Property="Foreground" Value="Gray"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+
+                            <Button Grid.Column="7" Content="✖" FontSize="14" Width="30" Height="30"
+                                    Command="{Binding DataContext.RemoveCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    CommandParameter="{Binding}"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+
+        <Grid Grid.Row="1" Grid.ColumnSpan="2" Background="Gray">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0" Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0">
+                <TextBlock Text="{Binding CurrentSong.Title}" FontWeight="Bold" FontSize="20">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Foreground" Value="White"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding CurrentSong.State}" Value="Playing">
+                                    <Setter Property="Foreground" Value="LightGreen"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+                <TextBlock Text="{Binding CurrentSong.Artist}" FontSize="14">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Foreground" Value="White"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding CurrentSong.State}" Value="Playing">
+                                    <Setter Property="Foreground" Value="LightGreen"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock Text="{Binding CurrentPositionFormatted}" FontWeight="Bold" FontSize="18" Foreground="White" Margin="0,0,20,0"/>
+                <Slider Value="{Binding CurrentPositionSeconds, Mode=TwoWay}" 
+                    Maximum="{Binding CurrentSong.Duration.TotalSeconds}" Width="300" Height="20"/>
+                <TextBlock Text="{Binding CurrentSong.DurationFormatted}" FontWeight="Bold" FontSize="18" Foreground="White" Margin="20,0,0,0"/>
+            </StackPanel>
+
+            <StackPanel Margin="0,0,10,0" Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Button Content="⇄"
+                Command="{Binding ToggleShuffleCommand}" 
+                Width="40" Height="40" Margin="0,0,5,8" FontSize="32" FontWeight="Bold" Background="Transparent" BorderThickness="0">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Foreground" Value="White"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsShuffle}" Value="True">
+                                    <Setter Property="Foreground" Value="LightGreen"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                
+                <Button Content="⏮"
+                Command="{Binding PreviousSongCommand}" 
+                Width="40" Height="40" Margin="0,0,5,0" FontSize="28" Foreground="White" Background="Transparent" BorderThickness="0"/>
+
+                <Button Command="{Binding ResumeCommand}" Width="40" Height="40" Margin="0,0,5,0" FontSize="28" Foreground="White" Background="Transparent" BorderThickness="0">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Content" Value="▶"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding CurrentSong.State}" Value="Playing">
+                                    <Setter Property="Content" Value="⏸"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <Button Content="⏹"
+                Command="{Binding StopCommand}" 
+                Width="40" Height="40" Margin="0,0,5,0" FontSize="28" Foreground="White" Background="Transparent" BorderThickness="0"/>
+
+                <Button Content="⏭"
+                Command="{Binding NextSongCommand}" 
+                Width="40" Height="40" Margin="0,0,5,0" FontSize="28" Foreground="White" Background="Transparent" BorderThickness="0"/>
+
+                <Button Content="🔁"
+                Command="{Binding ToggleRepeatCommand}" 
+                Width="40" Height="40" FontSize="28" FontWeight="Bold" Background="Transparent" BorderThickness="0">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Foreground" Value="White"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsRepeat}" Value="True">
+                                    <Setter Property="Foreground" Value="LightGreen"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <MediaElement x:Name="MedPlayer" LoadedBehavior="Manual"/>
+    </Grid>
+</Window>
