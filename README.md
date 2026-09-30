@@ -12,8 +12,6 @@ Designed for managing and listening to offline audio tracks with intuitive navig
 | :---: |
 | ![Application UI](screenshots/app_preview.png) |
 
-*(To show your screenshot here: create a folder named `screenshots/` in the project root, save your image there as `app_preview.png`, and commit it.)*
-
 ---
 
 ## ✨ Key Features
